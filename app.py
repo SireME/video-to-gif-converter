@@ -1,8 +1,9 @@
-from flask import Flask, request, render_template, send_file
-from moviepy.editor import VideoFileClip
+from flask import Flask, request, render_template, send_file, jsonify
+from videotogif import convert_to_gif
 import os
 import tempfile
-from videotogif import convert_to_gif
+import uuid
+import threading
 
 app = Flask(__name__)
 
@@ -11,6 +12,9 @@ CONVERTED_FOLDER = 'converted'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['CONVERTED_FOLDER'] = CONVERTED_FOLDER
 
+
+def delete_uploaded_file(file_path):
+    os.remove(file_path)
 
 
 @app.route('/')
@@ -28,9 +32,14 @@ def upload():
         return "No selected file"
     
     if file:
-        filename = file.filename
+        # Generate a UUID for the file name
+        filename = str(uuid.uuid4()) + os.path.splitext(file.filename)[1]
         video_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(video_path)
+        
+        # Start a thread to delete the uploaded file after 10 minutes
+        delete_thread = threading.Timer(600, delete_uploaded_file, args=[video_path])
+        delete_thread.start()
         
         gif_name = os.path.splitext(filename)[0] + '.gif'
         gif_path = os.path.join(app.config['CONVERTED_FOLDER'], gif_name)
