@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video to GIF Converter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f3f3f3;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        label {
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+
+        .btn-upload {
+            margin-top: 20px;
+        }
+
+        .btn-convert {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Video to GIF Converter</h1>
+        <form id="upload-form" action="/upload" method="post" enctype="multipart/form-data">
+            <label for="file" class="btn-upload">Choose Video</label>
+            <input type="file" id="file" name="file" accept="video/*">
+            <input type="submit" value="Convert" class="btn-upload btn-convert">
+        </form>
+        <div id="progress" style="display: none;">
+            <p>Uploading...</p>
+            <progress id="upload-progress" value="0" max="100"></progress>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('upload-form').addEventListener('submit', function() {
+            var progress = document.getElementById('progress');
+            progress.style.display = 'block';
+            var progressBar = document.getElementById('upload-progress');
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    var percentComplete = (e.loaded / e.total) * 100;
+                    progressBar.value = percentComplete;
+                }
+            };
+            xhr.send(new FormData(this));
+        });
+    </script>
+</body>
+</html>
