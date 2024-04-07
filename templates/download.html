@@ -40,7 +40,7 @@
 <body>
     <div class="container">
         <h1>Download your GIF</h1>
-        <a href="/download/{{ filename }}" class="download-link" download>Download GIF</a>
+        <a href="{{ url_for('download_file', filename=filename) }}" class="download-link" download>Download GIF</a>
     </div>
 </body>
 </html>

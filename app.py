@@ -1,4 +1,5 @@
 from flask import Flask, request, render_template, send_file, jsonify
+from flask import redirect, url_for
 from videotogif import convert_to_gif
 import os
 import tempfile
@@ -46,11 +47,18 @@ def upload():
         
         convert_to_gif(video_path, gif_path)
         
-        return jsonify({'status': 'success', 'gif_name': gif_name})
-
+        # Construct the download URL for the converted GIF
+        download_url = url_for('download', filename=gif_name)
+        
+        # Return a redirect response to the download route
+        return redirect(download_url)
 
 @app.route('/download/<filename>')
 def download(filename):
+    return render_template('download.html', filename=filename)
+
+@app.route('/<filename>')
+def download_file(filename):
     return send_file(os.path.join(app.config['CONVERTED_FOLDER'], filename), as_attachment=True)
 
 
